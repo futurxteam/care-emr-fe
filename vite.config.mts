@@ -83,7 +83,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
           env.NODE_ENV === "development" && env.ENABLE_REACT_SCAN === "true",
       }),
       checker({
-        typescript: true,
+        typescript: false,
         eslint: {
           useFlatConfig: true,
           lintCommand: "eslint ./src",

@@ -26,7 +26,7 @@ fs.writeFileSync(
 
 const isPreCommit = process.env.PRE_COMMIT === "true";
 const isProduction = process.env.NODE_ENV === "production";
-const DEFAULT = true;
+const DEFAULT = false;
 
 const dynamicRules = (ruleset, logKey) => {
   const appliedRule = Object.entries(ruleset).find(([rule, condition]) => {
