@@ -72,6 +72,19 @@ export function makeHeaders(
     headers.set("Authorization", authorizationHeader);
   }
 
+  console.log("[DEBUG AUTHHEADERS]", {
+    path,
+    hasAuthInit: additionalHeaders
+      ? "Authorization" in additionalHeaders ||
+        (additionalHeaders as Record<string, string>)["authorization"] !==
+          undefined
+      : false,
+    headersHasAuth: headers.has("Authorization"),
+    headerVal: headers.get("Authorization"),
+    resolvedAuth: authorizationHeader,
+    noAuth,
+  });
+
   return headers;
 }
 
