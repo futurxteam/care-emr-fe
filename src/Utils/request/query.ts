@@ -28,7 +28,7 @@ export async function callApi<Route extends ApiRoute<unknown, unknown>>(
 
   const fetchOptions: RequestInit = {
     method,
-    headers: makeHeaders(noAuth ?? false, options?.headers, isFormData),
+    headers: makeHeaders(noAuth ?? false, options?.headers, isFormData, path),
     signal: options?.signal,
   };
 

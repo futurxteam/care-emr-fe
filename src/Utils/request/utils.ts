@@ -57,6 +57,7 @@ export function makeHeaders(
   noAuth: boolean,
   additionalHeaders?: HeadersInit,
   isFormData?: boolean,
+  path?: string,
 ) {
   const headers = new Headers(additionalHeaders);
 
@@ -66,7 +67,7 @@ export function makeHeaders(
   }
   headers.append("Accept", "application/json");
 
-  const authorizationHeader = getAuthorizationHeader();
+  const authorizationHeader = getAuthorizationHeader(path);
   if (authorizationHeader && !noAuth) {
     headers.set("Authorization", authorizationHeader);
   }
@@ -74,16 +75,30 @@ export function makeHeaders(
   return headers;
 }
 
-export function getAuthorizationHeader() {
+export function getAuthorizationHeader(path?: string) {
+  const isOtpPath =
+    path?.includes("/api/v1/otp/") || path?.includes("/otp/slots/");
+
+  const patientTokenStr = localStorage.getItem(
+    LocalStorageKeys.patientTokenKey,
+  );
   const accessToken = localStorage.getItem(LocalStorageKeys.accessToken);
+
+  if (isOtpPath && patientTokenStr) {
+    try {
+      const patientToken = JSON.parse(patientTokenStr);
+      if (patientToken && patientToken.token) {
+        return `Bearer ${patientToken.token}`;
+      }
+    } catch {
+      // Ignored
+    }
+  }
 
   if (accessToken) {
     return `Bearer ${accessToken}`;
   }
 
-  const patientTokenStr = localStorage.getItem(
-    LocalStorageKeys.patientTokenKey,
-  );
   if (patientTokenStr) {
     try {
       const patientToken = JSON.parse(patientTokenStr);
