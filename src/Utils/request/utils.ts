@@ -81,6 +81,20 @@ export function getAuthorizationHeader() {
     return `Bearer ${accessToken}`;
   }
 
+  const patientTokenStr = localStorage.getItem(
+    LocalStorageKeys.patientTokenKey,
+  );
+  if (patientTokenStr) {
+    try {
+      const patientToken = JSON.parse(patientTokenStr);
+      if (patientToken && patientToken.token) {
+        return `Bearer ${patientToken.token}`;
+      }
+    } catch {
+      // Ignored
+    }
+  }
+
   return null;
 }
 
