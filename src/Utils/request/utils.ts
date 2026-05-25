@@ -68,7 +68,7 @@ export function makeHeaders(
   headers.append("Accept", "application/json");
 
   const authorizationHeader = getAuthorizationHeader(path);
-  if (authorizationHeader && !noAuth) {
+  if (authorizationHeader && !noAuth && !headers.has("Authorization")) {
     headers.set("Authorization", authorizationHeader);
   }
 
