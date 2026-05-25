@@ -264,6 +264,7 @@ export interface AppointmentCreateRequest {
   patient: string;
   note: string;
   tags: string[];
+  appointment_medium?: string;
 }
 
 export interface AppointmentCreatePublicRequest {

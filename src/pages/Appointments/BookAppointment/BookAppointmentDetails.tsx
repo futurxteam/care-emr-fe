@@ -21,6 +21,27 @@ import { Appointment } from "@/types/scheduling/schedule";
 import { AppointmentDateSelection } from "./AppointmentDateSelection";
 import { AppointmentFormSection } from "./AppointmentFormSection";
 
+interface RazorpayBookingData extends Appointment {
+  payment_required?: boolean;
+  razorpay_order_id?: string;
+  razorpay_key?: string;
+  payment_amount?: number;
+  currency?: string;
+  appointment_medium?: string;
+}
+
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+  razorpay_order_id?: string;
+}
+
+interface RazorpayInstance {
+  open: () => void;
+}
+
+type RazorpayConstructor = new (options: unknown) => RazorpayInstance;
+
 export const BookAppointmentDetails = ({
   patientId,
   onSuccess,
@@ -41,6 +62,9 @@ export const BookAppointmentDetails = ({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
+  const [appointmentMedium, setAppointmentMedium] =
+    useState<string>("in_person");
+
   const [selectedResource, setSelectedResource] =
     useState<ScheduleResourceFormState>({
       resource: null,
@@ -70,17 +94,110 @@ export const BookAppointmentDetails = ({
     }
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleRazorpayPayment = async (bookingData: RazorpayBookingData) => {
+    const res = await loadRazorpayScript();
+    if (!res) {
+      toast.error(
+        t(
+          "razorpay_load_failed",
+          "Failed to load Razorpay SDK. Please check your connection.",
+        ),
+      );
+      return;
+    }
+
+    const options = {
+      key: bookingData.razorpay_key || "rzp_test_placeholder",
+      amount: bookingData.payment_amount,
+      currency: bookingData.currency || "INR",
+      name: "Care EMR",
+      description: `Appointment Pre-Payment (${bookingData.appointment_medium})`,
+      order_id: bookingData.razorpay_order_id,
+      handler: async function (response: RazorpayResponse) {
+        try {
+          const verificationResponse = await mutate(
+            scheduleApi.appointments.confirmPayment,
+            {
+              pathParams: {
+                facilityId: facilityId ?? "",
+                bookingId: bookingData.id,
+              },
+            },
+          )({
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          });
+
+          toast.success(
+            t(
+              "payment_verified_and_appointment_confirmed",
+              "Payment verified and appointment confirmed!",
+            ),
+          );
+          onSuccess?.();
+          navigate(
+            `/facility/${facilityId}/patient/${patientId}/appointments/${verificationResponse.id}?showSuccess=true`,
+          );
+        } catch (_error: unknown) {
+          toast.error(
+            t(
+              "payment_verification_failed",
+              "Payment verification failed. Please contact support.",
+            ),
+          );
+        }
+      },
+      prefill: {
+        name: "",
+        email: "",
+        contact: "",
+      },
+      theme: {
+        color: "#0f766e",
+      },
+      modal: {
+        ondismiss: function () {
+          toast.warning(
+            t(
+              "payment_cancelled",
+              "Payment cancelled. Complete payment within 10 minutes to hold slot.",
+            ),
+          );
+        },
+      },
+    };
+
+    const Razorpay = (window as unknown as { Razorpay: RazorpayConstructor })
+      .Razorpay;
+    const paymentObject = new Razorpay(options);
+    paymentObject.open();
+  };
+
   const { mutateAsync: createAppointment, isPending: isCreating } = useMutation(
     {
       mutationFn: mutate(scheduleApi.slots.createAppointment, {
         pathParams: { facilityId, slotId: selectedSlotId ?? "" },
       }),
-      onSuccess: (data: Appointment) => {
-        toast.success(t("appointment_created_successfully"));
-        onSuccess?.();
-        navigate(
-          `/facility/${facilityId}/patient/${patientId}/appointments/${data.id}?showSuccess=true`,
-        );
+      onSuccess: (data: RazorpayBookingData) => {
+        if (data.status === "payment_pending" || data.payment_required) {
+          handleRazorpayPayment(data);
+        } else {
+          toast.success(t("appointment_created_successfully"));
+          onSuccess?.();
+          navigate(
+            `/facility/${facilityId}/patient/${patientId}/appointments/${data.id}?showSuccess=true`,
+          );
+        }
       },
     },
   );
@@ -94,6 +211,7 @@ export const BookAppointmentDetails = ({
       patient: patientId,
       note: reason,
       tags: selectedTags.map((tag) => tag.id),
+      appointment_medium: appointmentMedium,
     });
   };
 
@@ -117,6 +235,8 @@ export const BookAppointmentDetails = ({
             setReason={setReason}
             selectedResource={selectedResource}
             setSelectedResource={handleResourceChange}
+            appointmentMedium={appointmentMedium}
+            setAppointmentMedium={setAppointmentMedium}
           />
         </div>
         <div className="hidden sm:flex sm:flex-col lg:flex-row gap-6 bg-white shadow rounded-lg p-4 w-full sm:max-h-full">

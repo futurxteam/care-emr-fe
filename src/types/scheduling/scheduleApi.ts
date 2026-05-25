@@ -173,6 +173,16 @@ export default {
       TRes: Type<Appointment>(),
       TBody: Type<TokenGenerate>(),
     },
+    confirmPayment: {
+      path: "/api/v1/facility/{facilityId}/appointments/{bookingId}/confirm_payment/",
+      method: HttpMethod.POST,
+      TRes: Type<Appointment>(),
+      TBody: Type<{
+        razorpay_payment_id: string;
+        razorpay_signature: string;
+      }>(),
+    },
+
     /**
      * Lists schedulable users for a facility
      */

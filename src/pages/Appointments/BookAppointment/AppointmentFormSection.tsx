@@ -20,6 +20,8 @@ interface AppointmentFormSectionProps {
   setReason: (reason: string) => void;
   selectedResource: ScheduleResourceFormState;
   setSelectedResource: (resource: ScheduleResourceFormState) => void;
+  appointmentMedium: string;
+  setAppointmentMedium: (medium: string) => void;
 }
 export const AppointmentFormSection = ({
   facilityId,
@@ -29,6 +31,8 @@ export const AppointmentFormSection = ({
   setReason,
   selectedResource,
   setSelectedResource,
+  appointmentMedium,
+  setAppointmentMedium,
 }: AppointmentFormSectionProps) => {
   const { t } = useTranslation();
 
@@ -64,6 +68,21 @@ export const AppointmentFormSection = ({
           facilityId={facilityId}
           setSelectedResource={setSelectedResource}
           selectedResource={selectedResource}
+        />
+      </div>
+
+      <div className="flex flex-col">
+        <Label className="mb-2 text-sm font-medium text-gray-950">
+          {t("appointment_medium", "Appointment Medium")}
+        </Label>
+        <RadioInput
+          options={[
+            { label: t("in_person", "In Person"), value: "in_person" },
+            { label: t("virtual", "Virtual (Online)"), value: "virtual" },
+          ]}
+          value={appointmentMedium}
+          onValueChange={setAppointmentMedium}
+          required={true}
         />
       </div>
 

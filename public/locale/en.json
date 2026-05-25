@@ -720,6 +720,7 @@
   "appointment_details": "Appointment Details",
   "appointment_invoice_alert": "Back to Appointment",
   "appointment_management_actions": "Manage appointment status and actions",
+  "appointment_medium": "Appointment Medium",
   "appointment_not_found": "Appointment not found",
   "appointment_note": "Enter a note for this appointment",
   "appointment_rescheduled": "Appointment has been rescheduled!",
@@ -2782,6 +2783,7 @@
   "in": "in",
   "in_cart": "In Cart",
   "in_consultation": "In-Consultation",
+  "in_person": "In Person",
   "in_progress": "In Progress",
   "in_range": "In Range",
   "in_service": "In Service",
@@ -2846,6 +2848,7 @@
   "invalid_email": "Please enter a valid email address",
   "invalid_email_address": "Invalid email address",
   "invalid_ip_address": "Invalid IP Address",
+  "invalid_json": "Invalid JSON: please check the format and try again",
   "invalid_latitude": "Invalid latitude",
   "invalid_link_msg": "It appears that the password reset link you have used is either invalid or expired. Please request a new password reset link.",
   "invalid_longitude": "Invalid longitude",
@@ -4217,6 +4220,8 @@
   "payment_terms_placeholder": "Enter Payment Terms",
   "payment_timeline": "Payment Timeline",
   "payment_type": "Payment Type",
+  "payment_verification_failed": "Payment verification failed",
+  "payment_verified_and_appointment_confirmed": "Payment verified and appointment confirmed",
   "payments": "Payments",
   "payments_account_change_failed": "Failed to change account for payments",
   "payments_account_changed": "Payments moved to new account successfully",
@@ -4640,6 +4645,7 @@
   "ration_card__BPL": "BPL",
   "ration_card__NO_CARD": "Non-card holder",
   "ration_card_category": "Ration Card Category",
+  "razorpay_load_failed": "Failed to load Razorpay",
   "re_admission": "Re-Admission",
   "re_visit_allowed_days": "Re-visit allowed days",
   "re_visit_consultation_charge": "Re-visit consultation charge",
@@ -6524,6 +6530,5 @@
   "your_request_order_list": "Your Request Order List",
   "zoom_in": "Zoom In",
   "zoom_out": "Zoom Out",
-  "℞": "℞",
-  "invalid_json": "Invalid JSON: please check the format and try again"
+  "℞": "℞"
 }
