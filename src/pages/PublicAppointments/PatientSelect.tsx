@@ -188,7 +188,7 @@ export default function PatientSelect({
 
     createAppointment({
       patient: selectedPatientData.id,
-      note: reason,
+      note: reason ?? "",
     });
   };
 
