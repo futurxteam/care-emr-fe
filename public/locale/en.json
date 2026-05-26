@@ -5574,6 +5574,7 @@
   "session": "Session",
   "session_capacity": "Session Capacity",
   "session_expired": "Session Expired",
+  "session_expired_login_again": "Your session has expired. Please log in again to continue.",
   "session_expired_message": "It looks like your session timed out for a moment. Take a quick breather, then log in again to continue.",
   "session_expired_msg": "It appears that your session has expired. This could be due to inactivity. Please login again to continue.",
   "session_slots_info": "{{slots}} slots of {{minutes}} mins.",
