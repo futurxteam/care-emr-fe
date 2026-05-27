@@ -35,4 +35,15 @@ export default {
     TRes: Type<PublicAppointment>(),
     TBody: Type<{ appointment: string; patient: string }>(),
   },
+  confirmPayment: {
+    path: "/api/v1/otp/slots/confirm_payment/",
+    method: HttpMethod.POST,
+    TRes: Type<PublicAppointment>(),
+    TBody: Type<{
+      appointment: string;
+      patient: string;
+      razorpay_payment_id: string;
+      razorpay_signature: string;
+    }>(),
+  },
 } as const;
