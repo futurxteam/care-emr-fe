@@ -35,14 +35,14 @@ import publicPatientApi from "@/types/emr/patient/publicPatientApi";
 import PublicAppointmentApi from "@/types/scheduling/PublicAppointmentApi";
 import { PublicAppointment } from "@/types/scheduling/schedule";
 
-interface RazorpayBookingData extends PublicAppointment {
+type RazorpayBookingData = PublicAppointment & {
   payment_required?: boolean;
   razorpay_order_id?: string;
   razorpay_key?: string;
   payment_amount?: number;
   currency?: string;
   appointment_medium?: string;
-}
+};
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -113,13 +113,13 @@ export function PatientRegistration(props: PatientRegistrationProps) {
 
   const formResolver = zodResolver(patientSchema);
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof patientSchema>>({
     resolver: formResolver,
     defaultValues: {
       name: "",
       ageInputType: "date_of_birth",
       address: "",
-    },
+    } as any,
   });
 
   const loadRazorpayScript = () => {
@@ -228,7 +228,8 @@ export function PatientRegistration(props: PatientRegistrationProps) {
           Authorization: `Bearer ${tokenData.token}`,
         },
       }),
-      onSuccess: (data: RazorpayBookingData) => {
+      onSuccess: (res: any) => {
+        const data = res as RazorpayBookingData;
         if (data.status === "payment_pending" || data.payment_required) {
           handleRazorpayPayment(data);
         } else {
